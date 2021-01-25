@@ -1,102 +1,134 @@
-<!doctype html>
+<!DOCTYPE html>
 <html class="no-js" lang="">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <title>MPD.FM</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="manifest" href="site.webmanifest">
-        <link rel="apple-touch-icon" href="icon.png">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <title>MPD.FM</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="apple-touch-icon" href="icon.png" />
 
-        <link href="https://fonts.googleapis.com/css?family=Oswald:400,500&amp;subset=latin-ext" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css?family=Oswald:400,500&amp;subset=latin-ext"
+      rel="stylesheet"
+    />
 
-        <link rel="stylesheet" href="css/pure-min.css">
-        <link rel="stylesheet" href="css/main.css">
-    </head>
-    <body>
-        <div id="app">
-            <!--[if lte IE 9]>
-                <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
-            <![endif]-->
+    <link rel="stylesheet" href="css/pure-min.css" />
+    <link rel="stylesheet" href="css/main.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!--[if lte IE 9]>
+        <p class="browserupgrade">
+          You are using an <strong>outdated</strong> browser. Please
+          <a href="https://browsehappy.com/">upgrade your browser</a> to improve
+          your experience and security.
+        </p>
+      <![endif]-->
 
-            <div class="error-message" v-if="errorState.wssDisconnect || errorState.mpdServerDisconnect">
-                <div class="pure-g error-content">
-                        <div class="pure-u-1 l-box">
-                            <p v-if="errorState.wssDisconnect" class="error-heading">Can't reach server - trying to reconnect...</p>
-                            <p v-else-if="errorState.mpdServerDisconnect" class="error-heading">The server can't reach MPD - trying to reconnect...</p>
-                        </div>
-                </div>
-            </div>
-            
-            <div class="content">
-
-                <radio-station 
-                    inline-template
-                    v-for="item in stationList"
-                    v-bind:station="item"
-                    v-bind:key="item.id">
-                    <div class="pure-g" v-on:click="onPlayStation(item.stream)">
-                        <div class="pure-u-1-4 l-box">
-                            <div class="station-logo">
-                                <img class="pure-img" v-bind:src="item.logo" v-bind:alt="item.station">
-                            </div>
-                        </div>
-                        <div class="pure-u-3-4 l-box station-text">
-                            <div class="station-text-inside">
-                                <p class="station-heading">{{ item.station }}</p>
-                                <p>{{ item.desc }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <hr class="sep-line">
-                </radio-station>
-
-                <div class="pure-g blank-radio">
-                    <div class="pure-u-1-4 l-box">
-                        <div class="station-logo">
-                            <img class="pure-img" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
-                        </div>
-                    </div>
-                    <div class="pure-u-3-4 l-box">
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="player">
-                <div class="pure-g player-content">
-                        <div class="pure-u-1-4 l-box" v-on:click="onPlayButton">
-                            <div class="station-logo">
-
-                                <img class="pure-img active-station" v-bind:src="!currentStation ? 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=' : currentStation.logo" v-bind:alt="!currentStation ? '' : currentStation.station">
-
-                                <img v-if="status==='playing'" class="pure-img play-button" src="img/pause.svg" alt="Pause">
-                                <img v-else-if="status==='stopped' || status==='paused'" class="pure-img play-button" src="img/play.svg" alt="Play">
-                                <div v-else class="play-button spinner-frame" style="width: 100%">
-                                    <div class="spinner">
-                                        <div class="bounce1"></div>
-                                        <div class="bounce2"></div>
-                                        <div class="bounce3"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="pure-u-3-4 l-box station-text">
-                            <div class="station-text-inside">
-                                <p class="station-heading">{{ elapsed }}</p>
-                                <p>{{ song }}</p>
-                            </div>
-                        </div>
-                </div>
-            </div>
-            
-            <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-            <script src="js/plugins.js"></script>
-            <script src="js/vendor/ReconnectingWebSocket.js"></script>
-            <script src="js/main.js"></script>
+      <div
+        class="error-message"
+        v-if="errorState.wssDisconnect || errorState.mpdServerDisconnect"
+      >
+        <div class="pure-g error-content">
+          <div class="pure-u-1 l-box">
+            <p v-if="errorState.wssDisconnect" class="error-heading">
+              Can't reach server - trying to reconnect...
+            </p>
+            <p v-else-if="errorState.mpdServerDisconnect" class="error-heading">
+              The server can't reach MPD - trying to reconnect...
+            </p>
+          </div>
         </div>
-    </body>
+      </div>
+
+      <div class="content">
+        <radio-station
+          inline-template
+          v-for="item in stationList"
+          v-bind:station="item"
+          v-bind:key="item.id"
+        >
+          <div class="pure-g" v-on:click="onPlayStation(item.stream)">
+            <div class="pure-u-1-4 l-box">
+              <div class="station-logo">
+                <img
+                  class="pure-img"
+                  v-bind:src="item.logo"
+                  v-bind:alt="item.station"
+                />
+              </div>
+            </div>
+            <div class="pure-u-3-4 l-box station-text">
+              <div class="station-text-inside">
+                <p class="station-heading">{{ item.station }}</p>
+                <p>{{ item.desc }}</p>
+              </div>
+            </div>
+          </div>
+          <hr class="sep-line" />
+        </radio-station>
+
+        <div class="pure-g blank-radio">
+          <div class="pure-u-1-4 l-box">
+            <div class="station-logo">
+              <img
+                class="pure-img"
+                src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+              />
+            </div>
+          </div>
+          <div class="pure-u-3-4 l-box"></div>
+        </div>
+      </div>
+
+      <div class="player">
+        <div class="pure-g player-content">
+          <div class="pure-u-1-4 l-box" v-on:click="onPlayButton">
+            <div class="station-logo">
+              <img
+                class="pure-img active-station"
+                v-bind:src="!currentStation ? 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=' : currentStation.logo"
+                v-bind:alt="!currentStation ? '' : currentStation.station"
+              />
+
+              <img
+                v-if="status==='playing'"
+                class="pure-img play-button"
+                src="img/pause.svg"
+                alt="Pause"
+              />
+              <img
+                v-else-if="status==='stopped' || status==='paused'"
+                class="pure-img play-button"
+                src="img/play.svg"
+                alt="Play"
+              />
+              <div v-else class="play-button spinner-frame" style="width: 100%">
+                <div class="spinner">
+                  <div class="bounce1"></div>
+                  <div class="bounce2"></div>
+                  <div class="bounce3"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="pure-u-3-4 l-box station-text">
+            <div class="station-text-inside">
+              <p class="station-heading">{{ elapsed }}</p>
+              <p>{{ song }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+      <script src="js/plugins.js"></script>
+      <script src="js/vendor/ReconnectingWebSocket.js"></script>
+      <script src="js/main.js"></script>
+    </div>
+  </body>
 </html>
