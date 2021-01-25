@@ -36,7 +36,7 @@
             v-bind:station="item"
             v-bind:key="item.id"
           >
-            <div class="box" v-on:click="onPlayStation(item.stream)">
+            <div class="box">
               <div class="media">
                 <div class="media-left">
                   <figure class="image is-64x64">
@@ -54,6 +54,14 @@
                       {{ item.desc }}
                     </p>
                   </div>
+                </div>
+                <div
+                  class="media-right"
+                  v-on:click="onPlayStation(item.stream)"
+                >
+                  <span>
+                    <i class="far fa-2x fa-play-circle"></i>
+                  </span>
                 </div>
               </div>
             </div>
