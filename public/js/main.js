@@ -36,6 +36,11 @@ var app = new Vue({
         this.connectWSS();
         this.updateElapsed();
     },
+    watch: {
+      song(newSong) {
+        document.title = newSong + " | MPD.FM";
+      }
+    },
     methods: {
         connectWSS: function() {
             var self = this;
@@ -217,10 +222,10 @@ var app = new Vue({
                     text = artist;
                 }
                 if(typeof album != 'undefined' && album.length > 0) {
-                    text += ((text.length > 0) ? ' - ' : '') + album;
+                    text += ((text.length > 0) ? ' – ' : '') + album;
                 }
                 if(typeof title != 'undefined' && title.length > 0) {
-                    text += ((text.length > 0) ? ' - ' : '') + title;
+                    text += ((text.length > 0) ? ' – ' : '') + title;
                 }
                 this.song = text;
             }
