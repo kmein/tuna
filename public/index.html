@@ -99,10 +99,13 @@
             </div>
             <div class="media-right" v-on:click="onPlayButton">
               <span class="icon is-large" v-if="status === 'playing'">
-                <i class="fas fa-2x fa-pause-circle"></i>
+                <i class="far fa-2x fa-pause-circle"></i>
               </span>
-              <span v-else-if="status === 'paused' || status === 'stopped'">
-                <i class="fas fa-2x fa-play-circle"></i>
+              <span
+                class="icon is-large"
+                v-else-if="status === 'paused' || status === 'stopped'"
+              >
+                <i class="far fa-2x fa-play-circle"></i>
               </span>
             </div>
           </div>
