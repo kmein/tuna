@@ -39,13 +39,15 @@
             <div v-bind:id="'station-' + item.id" class="box">
               <div class="media">
                 <div class="media-left">
-                  <figure class="image is-64x64">
-                    <img
-                      class="pure-img"
-                      v-bind:src="item.logo"
-                      v-bind:alt="item.station"
-                    />
-                  </figure>
+                  <a v-bind:href="'#station-' + item.id">
+                    <figure class="image is-64x64">
+                      <img
+                        class="pure-img"
+                        v-bind:src="item.logo"
+                        v-bind:alt="item.station"
+                      />
+                    </figure>
+                  </a>
                 </div>
                 <div class="media-content">
                   <div class="content">
