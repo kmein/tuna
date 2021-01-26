@@ -104,16 +104,22 @@
                 </p>
               </div>
             </div>
-            <div class="media-right" v-on:click="onPlayButton">
-              <span class="icon is-large" v-if="status === 'playing'">
-                <i class="far fa-2x fa-pause-circle"></i>
-              </span>
-              <span
-                class="icon is-large"
-                v-else-if="status === 'paused' || status === 'stopped'"
-              >
-                <i class="far fa-2x fa-play-circle"></i>
-              </span>
+            <div class="media-right">
+              <div class="icon is-medium" v-on:click="playRandomStation">
+                <i class="fas fa-lg fa-random"></i>
+              </div>
+
+              <div v-on:click="onPlayButton">
+                <span class="icon is-medium" v-if="status === 'playing'">
+                  <i class="far fa-lg fa-pause-circle"></i>
+                </span>
+                <span
+                  class="icon is-medium"
+                  v-else-if="status === 'paused' || status === 'stopped'"
+                >
+                  <i class="far fa-lg fa-play-circle"></i>
+                </span>
+              </div>
             </div>
           </div>
         </div>

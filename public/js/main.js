@@ -116,6 +116,13 @@ var app = new Vue({
             }
         },
 
+        playRandomStation: function() {
+            const self = this;
+            const randomIndex = Math.floor(Math.random() * self.stationList.length);
+            const randomStation = self.stationList[randomIndex];
+            self.onPlayStation(randomStation.stream);
+        },
+
         onPlayStation: function(stream) {
             var self = this;
             self.status = 'loading';
