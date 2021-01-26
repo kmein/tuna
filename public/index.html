@@ -36,7 +36,7 @@
             v-bind:station="item"
             v-bind:key="item.id"
           >
-            <div class="box">
+            <div v-bind:id="'station-' + item.id" class="box">
               <div class="media">
                 <div class="media-left">
                   <figure class="image is-64x64">
@@ -81,12 +81,16 @@
         >
           <div class="media">
             <div class="media-left">
-              <figure class="image is-64x64">
-                <img
-                  v-bind:src="!currentStation ? 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=' : currentStation.logo"
-                  v-bind:alt="!currentStation ? '' : currentStation.station"
-                />
-              </figure>
+              <a
+                v-bind:href="currentStation ? '#station-' + currentStation.id : '#'"
+              >
+                <figure class="image is-64x64">
+                  <img
+                    v-bind:src="!currentStation ? 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=' : currentStation.logo"
+                    v-bind:alt="!currentStation ? '' : currentStation.station"
+                  />
+                </figure>
+              </a>
             </div>
             <div class="media-content">
               <div class="content">
