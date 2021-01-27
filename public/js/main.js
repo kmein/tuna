@@ -38,7 +38,7 @@ var app = new Vue({
     },
     watch: {
       song(newSong) {
-        document.title = newSong + " | MPD.FM";
+        if (newSong && newSong.length > 0) document.title = newSong + " | MPD.FM";
       }
     },
     methods: {
