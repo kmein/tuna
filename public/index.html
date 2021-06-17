@@ -29,10 +29,25 @@
           </p>
         </div>
 
+        <div class="field">
+          <div class="control">
+            <input
+              type="text"
+              class="input is-fullwidth"
+              placeholder="Suche"
+              id="searchField"
+              v-model="search"
+            />
+          </div>
+        </div>
+
         <div>
+          <p class="notification" v-if="stationResults.length == 0">
+            No radio stations were found that match your search.
+          </p>
           <radio-station
             inline-template
-            v-for="item in stationList"
+            v-for="item in stationResults"
             v-bind:station="item"
             v-bind:key="item.id"
           >
@@ -69,7 +84,6 @@
             </div>
             <hr class="sep-line" />
           </radio-station>
-          <div class="box"></div>
         </div>
 
         <div
