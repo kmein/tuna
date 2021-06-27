@@ -1,11 +1,11 @@
 "use strict";
 
-var socket = null;
+let socket = null;
 const DefaultSongText = "Select a station";
 const DefaultMpdErrorText = "Trying to reconnect...";
-var lastMpdReconnectAttempt = 0;
+let lastMpdReconnectAttempt = 0;
 
-var timer = {
+let timer = {
   // All in ms
   mpdLastUpdate: 0,
   lastMpdUpdateTimestamp: 0,
@@ -24,7 +24,6 @@ var app = new Vue({
     stationList: [],
     status: "loading", // playing, stopped, paused
     elapsed: "0:00",
-    search: "",
     song: DefaultSongText,
     currentStation: null,
     currentFile: null,
@@ -33,130 +32,114 @@ var app = new Vue({
       mpdServerDisconnect: true,
     },
   },
-  created: function () {
+  created() {
     this.connectWSS();
     this.updateElapsed();
   },
   watch: {
     song(newSong) {
-      if (newSong && newSong.length > 0) document.title = newSong + " | MPD.FM";
-    },
-  },
-  computed: {
-    stationResults() {
-      return this.stationList.filter((station) => {
-        const search = this.search.toLowerCase();
-        return (
-          station.station.toLowerCase().includes(search) ||
-          station.desc.toLowerCase().includes(search)
-        );
-      });
+      if (newSong && newSong.length > 0) document.title = newSong + " | Tuna";
     },
   },
   methods: {
-    connectWSS: function () {
-      var self = this;
-
+    connectWSS() {
       // Connect to WebSocket server
-      var url =
-        "ws://" +
-        location.hostname +
-        (location.port ? ":" + location.port : "");
+      const url = `ws://${location.hostname}${
+        location.port ? `:${location.port}` : ""
+      }`;
+
       socket = new ReconnectingWebSocket(url, null, {
         reconnectInterval: 3000,
       });
 
-      socket.onopen = function () {
-        self.errorState.wssDisconnect = false;
-        self.sendWSSMessage("REQUEST_STATION_LIST", null);
-        self.sendWSSMessage("REQUEST_STATUS", null);
+      socket.onopen = () => {
+        this.errorState.wssDisconnect = false;
+        this.sendWSSMessage({ message: "REQUEST_STATION_LIST" });
+        this.sendWSSMessage({ message: "REQUEST_STATUS" });
+        this.sendWSSMessage({ message: "REQUEST_SONG" });
       };
 
-      socket.onmessage = function (message) {
-        self.errorState.wssDisconnect = false;
-        var msg = JSON.parse(message.data);
-        switch (msg.type) {
+      socket.onmessage = (message) => {
+        this.errorState.wssDisconnect = false;
+        const msg = JSON.parse(message.data);
+        // console.log(msg);
+        switch (msg.message) {
           case "STATION_LIST":
-            self.stationList = msg.data;
-            if (!self.currentStation && self.currentFile)
-              self.setCurrentStation(self.currentFile);
+            this.stationList = msg.data;
+            if (!this.currentStation && this.currentFile)
+              this.setCurrentStation(this.currentFile);
             break;
           case "STATUS":
             timer.lastDisplayTimestamp = 0;
-            self.setPlayState(msg.data.state);
-            self.setCurrentStation(msg.data.file);
-            self.setSongName(msg.data.title, msg.data.album, msg.data.artist);
-            self.setElapsedTime(msg.data.elapsed);
+            this.setPlayState(msg.data.state);
+            this.setElapsedTime(msg.data.elapsed);
             break;
-          case "ELAPSED":
-            self.setElapsedTime(msg.data.elapsed);
+          case "SONG":
+            if (msg.data) {
+              this.setCurrentStation(msg.data.path);
+              this.setSongName(msg.data.title, msg.data.album, msg.data.artist);
+            }
             break;
           case "MPD_OFFLINE":
-            self.status = "loading";
-            self.currentStation = null;
-            self.currentFile = null;
-            self.elapsed = "0:00";
-            self.song = DefaultMpdErrorText;
-            self.errorState.mpdServerDisconnect = true;
+            this.status = "loading";
+            this.currentStation = null;
+            this.currentFile = null;
+            this.elapsed = "0:00";
+            this.song = DefaultMpdErrorText;
+            this.errorState.mpdServerDisconnect = true;
             setTimeout(() => {
               if (Date.now() - lastMpdReconnectAttempt >= 2500) {
                 lastMpdReconnectAttempt = Date.now();
-                self.sendWSSMessage("REQUEST_STATUS", null);
+                this.sendWSSMessage({ message: "REQUEST_STATUS" });
               }
             }, 3000);
             return;
         }
 
-        self.errorState.mpdServerDisconnect = false;
+        this.errorState.mpdServerDisconnect = false;
       };
 
-      socket.onerror = socket.onclose = function (err) {
-        self.errorState.wssDisconnect = true;
+      socket.onerror = socket.onclose = (err) => {
+        this.errorState.wssDisconnect = true;
       };
     },
 
-    onPlayButton: function (event) {
-      var self = this;
-      switch (self.status) {
+    onPlayButton(event) {
+      switch (this.status) {
         case "playing":
-          self.status = "loading";
-          self.sendWSSMessage("PAUSE", null);
+          this.status = "loading";
+          this.sendWSSMessage({ message: "PAUSE" });
           break;
         case "stopped":
         case "paused":
-          self.status = "loading";
-          self.sendWSSMessage("PLAY", null);
+          this.status = "loading";
+          this.sendWSSMessage({ message: "PLAY" });
           break;
         default:
-          self.sendWSSMessage("REQUEST_STATUS", null);
+          this.sendWSSMessage({ message: "REQUEST_STATUS" });
           break;
       }
     },
 
-    playRandomStation: function () {
-      const self = this;
-      const randomIndex = Math.floor(
-        Math.random() * self.stationResults.length
-      );
-      const randomStation = self.stationResults[randomIndex];
-      self.onPlayStation(randomStation.stream);
+    playRandomStation() {
+      const randomIndex = Math.floor(Math.random() * this.stationList.length);
+      const randomStation = this.stationList[randomIndex];
+      this.onPlayStation(randomStation.stream);
     },
 
-    onPlayStation: function (stream) {
-      var self = this;
-      self.status = "loading";
-      self.currentStation = null;
-      self.elapsed = "0:00";
-      self.song = "";
-      self.sendWSSMessage("PLAY", { stream: stream });
+    onPlayStation(stream) {
+      this.status = "loading";
+      this.currentStation = null;
+      this.elapsed = "0:00";
+      this.song = "";
+      this.sendWSSMessage({ message: "PLAY", data: { stream } });
     },
 
-    updateElapsed: function () {
-      var self = this;
-      var timeout = 1000;
-      if (self.status === "playing") {
+    updateElapsed() {
+      let timeout = 1000;
+      if (this.status === "playing") {
         // Last MPD update + the time passed since then
-        var bestGuessOnMpdTime =
+        const bestGuessOnMpdTime =
           timer.mpdLastUpdate + Date.now() - timer.lastMpdUpdateTimestamp;
 
         if (timer.lastDisplayTimestamp <= 0) {
@@ -171,40 +154,41 @@ var app = new Vue({
         );
 
         // Calculate difference to best guess
-        var delta = timer.displayedTime - bestGuessOnMpdTime;
+        const delta = timer.displayedTime - bestGuessOnMpdTime;
 
         if (Math.abs(delta) > 3000) {
           timer.displayedTime = bestGuessOnMpdTime;
         } else {
-          var timeoutShorterToRecoverIn10Secs = delta / 10;
+          const timeoutShorterToRecoverIn10Secs = delta / 10;
           timeout = Math.min(
             Math.max(timeout - timeoutShorterToRecoverIn10Secs, 0),
             2000
           );
           timer.displayedTime -= timeoutShorterToRecoverIn10Secs;
         }
-      } else if (self.status === "paused") {
+      } else if (this.status === "paused") {
         timer.displayedTime = timer.mpdLastUpdate;
       } else {
         timer.displayedTime = 0;
       }
 
-      self.changeDisplayTimer(timer.displayedTime);
+      this.changeDisplayTimer(timer.displayedTime);
       timer.lastDisplayTimestamp = Date.now();
 
       setTimeout(() => {
-        self.updateElapsed();
+        this.updateElapsed();
       }, timeout);
 
       if (
-        self.status === "playing" &&
+        this.status === "playing" &&
         Date.now() - timer.lastMpdUpdateTimestamp > 10000
       ) {
-        self.sendWSSMessage("REQUEST_ELAPSED", null);
+        this.sendWSSMessage({ message: "REQUEST_STATUS" });
+        this.sendWSSMessage({ message: "REQUEST_SONG" });
       }
     },
 
-    setElapsedTime: function (elapsed) {
+    setElapsedTime(elapsed) {
       if (!isNaN(parseFloat(elapsed)) && isFinite(elapsed)) {
         timer.mpdLastUpdate = elapsed * 1000;
       } else {
@@ -213,7 +197,7 @@ var app = new Vue({
       timer.lastMpdUpdateTimestamp = Date.now();
     },
 
-    setPlayState: function (state) {
+    setPlayState(state) {
       switch (state) {
         case "play":
           this.status = "playing";
@@ -230,30 +214,25 @@ var app = new Vue({
       }
     },
 
-    setCurrentStation: function (file) {
-      var self = this;
-      var found = false;
-      self.currentFile = file;
-      self.stationList.forEach((station) => {
-        if (station.stream === file) {
-          found = true;
-          // Don't do anything if the station did not chnage
-          if (!self.currentStation || self.currentStation.stream !== file)
-            self.currentStation = station;
-          return;
-        }
-      });
-      if (!found) {
-        self.song = DefaultSongText;
-        self.currentStation = null;
+    setCurrentStation(file) {
+      this.currentFile = file;
+      const station = this.stationList.find(
+        (station) => station.stream === file
+      );
+      if (station) {
+        if (!this.currentStation || this.currentStation.stream !== file)
+          this.currentStation = station;
+      } else {
+        this.song = DefaultSongText;
+        this.currentStation = null;
       }
     },
 
-    setSongName: function (title, album, artist) {
+    setSongName(title, album, artist) {
       if (!title && !album && !artist && !this.currentStation) {
         this.song = DefaultSongText;
       } else {
-        var text = "";
+        let text = "";
         if (typeof artist != "undefined" && artist.length > 0) {
           text = artist;
         }
@@ -267,28 +246,23 @@ var app = new Vue({
       }
     },
 
-    changeDisplayTimer: function (ms) {
-      var timeInSec = ms / 1000;
-      var hours = Math.floor(timeInSec / 3600);
-      var minutes = Math.floor(timeInSec / 60 - hours * 60);
-      var seconds = Math.floor(timeInSec - hours * 3600 - minutes * 60);
-      var strToDisplay = hours > 0 ? hours + ":" : "";
+    changeDisplayTimer(ms) {
+      const timeInSec = ms / 1000;
+      const hours = Math.floor(timeInSec / 3600);
+      const minutes = Math.floor(timeInSec / 60 - hours * 60);
+      const seconds = Math.floor(timeInSec - hours * 3600 - minutes * 60);
+      let strToDisplay = hours > 0 ? hours + ":" : "";
       strToDisplay +=
         hours > 0 && minutes < 10 ? "0" + minutes + ":" : minutes + ":";
       strToDisplay += (seconds < 10 ? "0" : "") + seconds;
       this.elapsed = strToDisplay;
     },
 
-    sendWSSMessage: function (type, data) {
-      var self = this;
-      var msg = {
-        type: type,
-        data: data ? data : {},
-      };
+    sendWSSMessage(message) {
       try {
-        socket.send(JSON.stringify(msg));
+        socket.send(JSON.stringify(message));
       } catch (error) {
-        self.errorState.wssDisconnect = true;
+        this.errorState.wssDisconnect = true;
       }
     },
   },

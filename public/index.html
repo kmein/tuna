@@ -2,7 +2,7 @@
 <html class="no-js" lang="">
   <head>
     <meta charset="utf-8" />
-    <title>MPD.FM</title>
+    <title>Tuna</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="manifest" href="site.webmanifest" />
     <link
@@ -29,25 +29,10 @@
           </p>
         </div>
 
-        <div class="field">
-          <div class="control">
-            <input
-              type="text"
-              class="input is-fullwidth"
-              placeholder="Suche"
-              id="searchField"
-              v-model="search"
-            />
-          </div>
-        </div>
-
         <div>
-          <p class="notification" v-if="stationResults.length == 0">
-            No radio stations were found that match your search.
-          </p>
           <radio-station
             inline-template
-            v-for="item in stationResults"
+            v-for="item in stationList"
             v-bind:station="item"
             v-bind:key="item.id"
           >
@@ -133,6 +118,9 @@
                 >
                   <i class="far fa-lg fa-play-circle"></i>
                 </span>
+                <span v-if="status === 'loading'" class="icon is-medium">
+                  <i class="fas fa-lg fa-spinner"></i>
+                </span>
               </div>
             </div>
           </div>
@@ -140,7 +128,6 @@
       </div>
     </section>
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-    <script src="js/plugins.js"></script>
     <script src="js/vendor/ReconnectingWebSocket.js"></script>
     <script src="js/main.js"></script>
   </body>
