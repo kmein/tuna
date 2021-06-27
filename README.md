@@ -15,75 +15,6 @@ MPD.fm has been tested on [Raspbian](https://www.raspberrypi.org/downloads/raspb
 - Installed and configured [MPD](www.musicpd.org/)
 - [Git](https://git-scm.com/) (optional to easily keep MPD.fm up-to-date)
 
-## Installation
-### Raspbian
-Do the following as **root**:
-```
-# Install Node.js if not yet done
-# E.g., by following Richard Stanley's script: https://github.com/audstanley/NodeJs-Raspberry-Pi
-wget -O - https://raw.githubusercontent.com/audstanley/NodeJs-Raspberry-Pi/master/Install-Node.sh | bash;
-
-# Install MPD if not yet done - configure as needed
-# MPD.FM typically works with an out-of-the-box MPD
-apt-get update
-apt-get install mpd
-
-# Install Git if not yet done
-apt-get install git
-
-# Create a user to have the server not as root
-useradd -mrU srv-mpd-fm
-
-# Sign into the new user
-su srv-mpd-fm
-cd /home/srv-mpd-fm
-
-# Download MPD.fm using Git
-git clone https://github.com/florianheinemann/MPD.FM.git
-
-# Install dependencies
-cd MPD.FM
-npm install
-
-# Back to root
-exit
-
-# Copy systemd service file
-cp /home/srv-mpd-fm/MPD.FM/service/MPD.FM.service /etc/systemd/system/
-
-# Ensure MPD.FM starts with boot and run
-systemctl enable MPD.FM
-systemctl start MPD.FM
-
-# Check status
-systemctl status MPD.FM
-```
-
-To update MPD.FM just do the following as root:
-```
-# Sign into the dedicated user
-su srv-mpd-fm
-cd /home/srv-mpd-fm/MPD.FM
-
-# Update
-git pull
-npm install
-
-# Back to root
-exit
-
-# Restart MPD.FM
-systemctl restart MPD.FM
-
-# Check status
-systemctl status MPD.FM
-```
-
-## Play!
-- Point your browser to \[IP of your server\]:4200 (e.g., http://192.168.1.2:4200)
-- On iOS you can display MPD.FM app-like by pressing *Share / Add to Home Screen* in Safari
-- Several clients can use MPD.FM simultaneously
-
 ## Configuration
 ### Basic settings
 Ports, etc. can be defined by editing the environment variables in `MPD.FM.service` (typically in /etc/systemd/system):
@@ -105,12 +36,12 @@ Environment=STATION_FILE=
 ### Station list
 `stations.json` provides MPD.FM with all the radio stations that should be shown to the users. Each station is stored as follows:
 ```
-{   "id": 1, 
+{   "id": 1,
     "station": "Berlin Community Radio",
     "desc": "BCR is a broadcasting platform presenting everything that is influencing Berlin",
     "logo": "http://www.berlincommunityradio.com/sites/all/themes/bcr_bootstrap/images/logospot.png",
     "stream": "http://berlincommunityradio.out.airtime.pro:8000/berlincommunityradio_a"
-} 
+}
 ```
 
 - **id** - A unique identifier of the station (easiest is to simply number them 1, 2, 3, ...
