@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <title>Tuna</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="manifest" href="site.webmanifest" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css"
@@ -117,9 +116,6 @@
                   v-else-if="status === 'paused' || status === 'stopped'"
                 >
                   <i class="far fa-lg fa-play-circle"></i>
-                </span>
-                <span v-if="status === 'loading'" class="icon is-medium">
-                  <i class="fas fa-lg fa-spinner"></i>
                 </span>
               </div>
             </div>
