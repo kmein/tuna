@@ -26,5 +26,12 @@
     "desc": "CKUT is a non-profit, campus-community radio station based at McGill University",
     "logo": "http://music.ckut.ca/wp-content/uploads/2012/01/ckut_logo-1024x625.jpg",
     "stream": "http://stream.ckut.ca:8000/903fm-192-stereo"
+  },
+  {
+    "id": 4,
+    "station": "FFH",
+    "desc": "Hitradio FFH",
+    "logo": "http://music.ckut.ca/wp-content/uploads/2012/01/ckut_logo-1024x625.jpg",
+    "stream": "http://mp3.ffh.de/radioffh/hqlivestream.mp3"
   }
 ]
