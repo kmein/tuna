@@ -12,6 +12,9 @@
     "client",
     "server"
   ],
+  "scripts": {
+    "build": "tsc"
+  },
   "author": "Kierán Meinhardt",
   "license": "MIT",
   "bugs": {
